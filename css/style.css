@@ -1,0 +1,341 @@
+/* ========== TOP GUN BAR — STYLES ========== */
+:root {
+  --bg: #000000;
+  --bg-soft: #0a0a0f;
+  --bg-panel: #111118;
+  --neon-cyan: #00e5ff;
+  --neon-red: #ff2a3c;
+  --text: #f5f7fa;
+  --text-dim: #a8b0bd;
+  --border: rgba(0, 229, 255, 0.25);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Rajdhani', 'Segoe UI', Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Black Ops One', 'Impact', sans-serif;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+a { color: var(--neon-cyan); text-decoration: none; transition: 0.2s; }
+a:hover { color: var(--neon-red); text-shadow: 0 0 8px var(--neon-red); }
+
+img { max-width: 100%; display: block; }
+
+/* ========== NAVIGATION ========== */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-brand {
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 1.3rem;
+  color: var(--neon-cyan);
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px var(--neon-cyan);
+}
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.nav-links a:hover { color: var(--neon-cyan); }
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--neon-cyan);
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+/* ========== HERO ========== */
+.hero {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at center, rgba(0,229,255,0.08) 0%, transparent 60%),
+    #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.04) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+}
+.hero-content {
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  max-width: 1100px;
+}
+.hero-logo {
+  width: 100%;
+  max-width: 850px;
+  margin: 0 auto 30px;
+  filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.45))
+          drop-shadow(0 0 50px rgba(255, 42, 60, 0.18));
+  animation: neonPulse 3s ease-in-out infinite;
+}
+@keyframes neonPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.45))
+            drop-shadow(0 0 50px rgba(255, 42, 60, 0.18));
+  }
+  50% {
+    filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.7))
+            drop-shadow(0 0 70px rgba(255, 42, 60, 0.3));
+  }
+}
+.hero-tagline {
+  font-size: 1.4rem;
+  color: var(--text-dim);
+  margin-bottom: 35px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+.hero-cta {
+  display: inline-flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn {
+  display: inline-block;
+  padding: 14px 36px;
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  border: 2px solid var(--neon-cyan);
+  background: transparent;
+  color: var(--neon-cyan);
+  cursor: pointer;
+  transition: all 0.3s;
+  text-shadow: 0 0 6px var(--neon-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25), inset 0 0 12px rgba(0, 229, 255, 0.08);
+}
+.btn:hover {
+  background: var(--neon-cyan);
+  color: #000;
+  box-shadow: 0 0 25px var(--neon-cyan);
+  text-shadow: none;
+}
+.btn-red {
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+  text-shadow: 0 0 6px var(--neon-red);
+  box-shadow: 0 0 12px rgba(255,42,60,0.25), inset 0 0 12px rgba(255,42,60,0.08);
+}
+.btn-red:hover {
+  background: var(--neon-red);
+  color: #fff;
+  box-shadow: 0 0 25px var(--neon-red);
+}
+
+/* ========== SECTIONS ========== */
+.section {
+  padding: 90px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.section-title {
+  text-align: center;
+  font-size: 2.6rem;
+  margin-bottom: 12px;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 12px var(--neon-cyan);
+}
+.section-subtitle {
+  text-align: center;
+  color: var(--text-dim);
+  margin-bottom: 50px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+}
+
+/* ========== ABOUT ========== */
+.about {
+  background: var(--bg-soft);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.about-text {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+
+/* ========== FEATURES GRID ========== */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+.feature-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 36px 24px;
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+}
+.feature-card:hover {
+  border-color: var(--neon-cyan);
+  transform: translateY(-4px);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
+}
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  display: block;
+}
+.feature-card h3 {
+  color: var(--neon-cyan);
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+.feature-card p {
+  color: var(--text-dim);
+  font-size: 0.98rem;
+}
+
+/* ========== HOURS / CONTACT ========== */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 40px;
+}
+.info-block {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  padding: 36px;
+}
+.info-block h3 {
+  color: var(--neon-red);
+  text-shadow: 0 0 10px var(--neon-red);
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+}
+.hours-list {
+  list-style: none;
+}
+.hours-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+  font-size: 1.05rem;
+}
+.hours-list li:last-child { border-bottom: none; }
+.hours-list .day { color: var(--text); font-weight: 600; }
+.hours-list .time { color: var(--neon-cyan); }
+.contact-item {
+  margin-bottom: 18px;
+  font-size: 1.05rem;
+}
+.contact-item .label {
+  display: block;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  background: #000;
+  border-top: 1px solid var(--border);
+  padding: 40px 20px 24px;
+  text-align: center;
+}
+.footer-logo {
+  max-width: 280px;
+  margin: 0 auto 20px;
+  opacity: 0.85;
+}
+.footer-social {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin: 16px 0;
+}
+.footer-social a {
+  font-size: 1.4rem;
+  color: var(--text-dim);
+}
+.footer-social a:hover { color: var(--neon-cyan); }
+.footer-copy {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 16px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .nav-toggle { display: block; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,0.97);
+    flex-direction: column;
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-links.open { display: flex; }
+  .hero-tagline { font-size: 1rem; letter-spacing: 2px; }
+  .section-title { font-size: 1.9rem; }
+  .info-grid { grid-template-columns: 1fr; gap: 24px; }
+  .section { padding: 60px 18px; }
+}
