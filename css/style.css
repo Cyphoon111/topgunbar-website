@@ -201,6 +201,27 @@ img { max-width: 100%; display: block; }
   display: block;
   object-fit: contain;
 }
+.motorcycle-arm-mask {
+  /* Cropped patch covering ONLY the rider's left arm on the handlebars.
+     Source bbox in 1536x1024 bike: x=476-866, y=302-406
+     -> left:30.99%, top:29.49%, width:25.39%, height:10.16% of wrapper.
+     Hidden by default; fades in during the fist pump so the rider doesn't
+     appear to have two arms simultaneously. */
+  position: absolute;
+  left: 30.99%;
+  top: 29.49%;
+  width: 25.39%;
+  height: 10.16%;
+  object-fit: fill;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease-in;
+  will-change: opacity;
+}
+.motorcycle-flyby.pumping .motorcycle-arm-mask {
+  opacity: 1;
+  transition: opacity 150ms ease-out;
+}
 .motorcycle-fist-arm {
   /* The arm sprite is a vertical strip (319x985, aspect ~1:3.09).
      Its bottom = shoulder anchor. Position so the BOTTOM of the arm
