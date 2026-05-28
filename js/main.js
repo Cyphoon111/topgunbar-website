@@ -26,6 +26,10 @@ window.addEventListener('load', () => {
   engineSound.volume = 0;
   engineSound.load();
 
+  // Preload fist-pump frame so the swap is instant (no flicker)
+  const fistImg = new Image();
+  fistImg.src = 'images/motorcycle-fist.png';
+
   // Unlock audio on FIRST user gesture so the autoplay policy is satisfied
   // by the time the bike fires
   let audioUnlocked = false;
@@ -80,6 +84,13 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     positionBike();
     bike.classList.add('driving');
+
+    // Fist-pump frame swap: bike crosses center at t=1.0s (linear 2s animation).
+    // Show fist-pump from t=0.85s to t=1.20s, then back to riding pose.
+    const originalSrc = bike.getAttribute('src');
+    const fistSrc = 'images/motorcycle-fist.png';
+    setTimeout(() => { bike.setAttribute('src', fistSrc); }, 850);
+    setTimeout(() => { bike.setAttribute('src', originalSrc); }, 1200);
 
     // Reset & play
     try {
