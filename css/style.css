@@ -178,6 +178,54 @@ img { max-width: 100%; display: block; }
 .trolley-showcase .venue-image {
   background: #fff;
 }
+/* ===== Motorcycle flyby animation ===== */
+.motorcycle-flyby {
+  position: fixed;
+  bottom: 8%;
+  left: 100%;
+  width: 420px;
+  max-width: 50vw;
+  height: auto;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 10px 30px rgba(0, 229, 255, 0.4))
+          drop-shadow(0 0 50px rgba(255, 42, 60, 0.3));
+  will-change: transform, opacity;
+}
+.motorcycle-flyby.driving {
+  animation: motorcycleFlyby 2s linear forwards;
+}
+@keyframes motorcycleFlyby {
+  0% {
+    left: 100%;
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    transform: translateX(calc(-100vw - 420px));
+    opacity: 1;
+  }
+}
+@media (max-width: 768px) {
+  .motorcycle-flyby {
+    width: 260px;
+    bottom: 12%;
+  }
+  @keyframes motorcycleFlyby {
+    0% {
+      left: 100%;
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      left: 100%;
+      transform: translateX(calc(-100vw - 260px));
+      opacity: 1;
+    }
+  }
+}
 .hero-history {
   max-width: 800px;
   margin: 18px auto 10px;
