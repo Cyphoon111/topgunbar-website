@@ -178,6 +178,20 @@ img { max-width: 100%; display: block; }
 .trolley-showcase .venue-image {
   background: #fff;
 }
+.collage-showcase {
+  border-color: rgba(255, 191, 0, 0.35);
+  background: linear-gradient(180deg, rgba(255,191,0,0.05), rgba(0,229,255,0.05));
+  box-shadow:
+    0 0 25px rgba(255, 191, 0, 0.25),
+    0 0 60px rgba(0, 229, 255, 0.18),
+    inset 0 0 20px rgba(255, 191, 0, 0.06);
+}
+.collage-showcase:hover {
+  box-shadow:
+    0 0 40px rgba(255, 191, 0, 0.45),
+    0 0 90px rgba(0, 229, 255, 0.3),
+    inset 0 0 25px rgba(255, 191, 0, 0.1);
+}
 .maverick-feature {
   width: 100%;
   max-width: 900px;
