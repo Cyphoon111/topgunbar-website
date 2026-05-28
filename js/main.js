@@ -14,39 +14,63 @@ if (toggle && links) {
 const y = document.getElementById('year');
 if (y) y.textContent = new Date().getFullYear();
 
-// Motorcycle flyby — drive across the "Great Balls of Fire" line, 3s after page load, 2s trip
+// ===== Motorcycle flyby with engine sound =====
 window.addEventListener('load', () => {
   const bike = document.getElementById('motorcycleFlyby');
   const targetText = document.querySelector('.hero-history');
   if (!bike) return;
 
-  // Preload the engine sound
+  // Preload engine sound
   const engineSound = new Audio('sounds/motorcycle.mp3');
   engineSound.preload = 'auto';
-  engineSound.volume = 0.0; // start silent for smooth fade-in
+  engineSound.volume = 0;
+  engineSound.load();
 
-  // Position the bike vertically aligned with the "Great Balls of Fire" line
+  // Unlock audio on FIRST user gesture so the autoplay policy is satisfied
+  // by the time the bike fires
+  let audioUnlocked = false;
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    // Play silently for a tick, then pause — this satisfies the gesture requirement
+    engineSound.muted = true;
+    const p = engineSound.play();
+    if (p !== undefined) {
+      p.then(() => {
+        engineSound.pause();
+        engineSound.currentTime = 0;
+        engineSound.muted = false;
+      }).catch(() => {
+        engineSound.muted = false;
+      });
+    }
+  }
+  // Listen for any user interaction
+  ['click', 'touchstart', 'keydown', 'scroll', 'mousemove', 'pointerdown'].forEach(evt => {
+    window.addEventListener(evt, unlockAudio, { once: true, passive: true, capture: true });
+  });
+
+  // Position bike vertically aligned with the "Great Balls of Fire" line
   function positionBike() {
     if (!targetText) return;
     const rect = targetText.getBoundingClientRect();
-    const targetY = rect.top + rect.height / 2; // vertical center of the text line
+    const targetY = rect.top + rect.height / 2;
     const bikeHeight = bike.offsetHeight || 280;
     bike.style.top = (targetY - bikeHeight / 2) + 'px';
   }
   positionBike();
   window.addEventListener('resize', positionBike);
 
-  // Fade volume helper (Doppler-like: ramp up as it approaches center, ramp down as it passes)
+  // Doppler-style volume envelope: quiet → loud → quiet over the 2s flyby
   function fadeVolume() {
-    const targetMax = 0.6;
-    const totalDuration = 2000; // matches CSS animation
+    const targetMax = 0.7;
+    const totalDuration = 2000;
     const steps = 40;
     const stepInterval = totalDuration / steps;
     let i = 0;
     const id = setInterval(() => {
-      const t = i / steps; // 0 → 1
-      // triangular envelope: peak at t=0.5
-      const env = 1 - Math.abs(t - 0.5) * 2;
+      const t = i / steps;
+      const env = 1 - Math.abs(t - 0.5) * 2; // triangular envelope, peak at t=0.5
       engineSound.volume = Math.max(0, Math.min(1, env * targetMax));
       i++;
       if (i > steps) clearInterval(id);
@@ -54,27 +78,33 @@ window.addEventListener('load', () => {
   }
 
   setTimeout(() => {
-    positionBike(); // re-position right before launch in case layout shifted
+    positionBike();
     bike.classList.add('driving');
-    // Play engine sound — modern browsers require user gesture for audio,
-    // but autoplay is usually allowed on first navigation if muted/low volume
+
+    // Reset & play
+    try {
+      engineSound.currentTime = 0;
+      engineSound.volume = 0.7; // immediate audible volume; fade overlay starts at 0 then rises
+      engineSound.muted = false;
+    } catch (e) {}
+
     const playPromise = engineSound.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
         fadeVolume();
-      }).catch(() => {
-        // Audio blocked by browser autoplay policy — fail silently
+      }).catch((err) => {
+        console.warn('Audio blocked — user must interact with page first.', err);
       });
     } else {
       fadeVolume();
     }
+
     bike.addEventListener('animationend', () => {
       bike.style.display = 'none';
-      // stop the audio after the bike leaves screen
       setTimeout(() => {
         engineSound.pause();
         engineSound.currentTime = 0;
-      }, 500);
+      }, 400);
     }, { once: true });
   }, 3000);
 });
