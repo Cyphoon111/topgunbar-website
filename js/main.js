@@ -14,11 +14,12 @@ if (toggle && links) {
 const y = document.getElementById('year');
 if (y) y.textContent = new Date().getFullYear();
 
-// ===== Motorcycle flyby with engine sound =====
+// ===== Motorcycle flyby with engine sound + fist-pump arm overlay =====
 window.addEventListener('load', () => {
-  const bike = document.getElementById('motorcycleFlyby');
+  const wrapper = document.getElementById('motorcycleFlyby');
+  if (!wrapper) return;
+
   const targetText = document.querySelector('.hero-history');
-  if (!bike) return;
 
   // Preload engine sound
   const engineSound = new Audio('sounds/motorcycle.mp3');
@@ -26,17 +27,11 @@ window.addEventListener('load', () => {
   engineSound.volume = 0;
   engineSound.load();
 
-  // Preload fist-pump frame so the swap is instant (no flicker)
-  const fistImg = new Image();
-  fistImg.src = 'images/motorcycle-fist.png';
-
-  // Unlock audio on FIRST user gesture so the autoplay policy is satisfied
-  // by the time the bike fires
+  // Unlock audio on first user gesture
   let audioUnlocked = false;
   function unlockAudio() {
     if (audioUnlocked) return;
     audioUnlocked = true;
-    // Play silently for a tick, then pause — this satisfies the gesture requirement
     engineSound.muted = true;
     const p = engineSound.play();
     if (p !== undefined) {
@@ -44,12 +39,9 @@ window.addEventListener('load', () => {
         engineSound.pause();
         engineSound.currentTime = 0;
         engineSound.muted = false;
-      }).catch(() => {
-        engineSound.muted = false;
-      });
+      }).catch(() => { engineSound.muted = false; });
     }
   }
-  // Listen for any user interaction
   ['click', 'touchstart', 'keydown', 'scroll', 'mousemove', 'pointerdown'].forEach(evt => {
     window.addEventListener(evt, unlockAudio, { once: true, passive: true, capture: true });
   });
@@ -59,13 +51,13 @@ window.addEventListener('load', () => {
     if (!targetText) return;
     const rect = targetText.getBoundingClientRect();
     const targetY = rect.top + rect.height / 2;
-    const bikeHeight = bike.offsetHeight || 280;
-    bike.style.top = (targetY - bikeHeight / 2) + 'px';
+    const wrapperHeight = wrapper.offsetHeight || 280;
+    wrapper.style.top = (targetY - wrapperHeight / 2) + 'px';
   }
   positionBike();
   window.addEventListener('resize', positionBike);
 
-  // Doppler-style volume envelope: quiet → loud → quiet over the 2s flyby
+  // Engine volume envelope
   function fadeVolume() {
     const targetMax = 0.7;
     const totalDuration = 2000;
@@ -74,7 +66,7 @@ window.addEventListener('load', () => {
     let i = 0;
     const id = setInterval(() => {
       const t = i / steps;
-      const env = 1 - Math.abs(t - 0.5) * 2; // triangular envelope, peak at t=0.5
+      const env = 1 - Math.abs(t - 0.5) * 2;
       engineSound.volume = Math.max(0, Math.min(1, env * targetMax));
       i++;
       if (i > steps) clearInterval(id);
@@ -83,35 +75,30 @@ window.addEventListener('load', () => {
 
   setTimeout(() => {
     positionBike();
-    bike.classList.add('driving');
+    wrapper.classList.add('driving');
 
-    // Fist-pump frame swap: bike crosses center at t=1.0s (linear 2s animation).
-    // Show fist-pump from t=0.85s to t=1.20s, then back to riding pose.
-    const originalSrc = bike.getAttribute('src');
-    const fistSrc = 'images/motorcycle-fist.png';
-    setTimeout(() => { bike.setAttribute('src', fistSrc); }, 850);
-    setTimeout(() => { bike.setAttribute('src', originalSrc); }, 1200);
+    // Trigger the fist-pump animation via a class — the arm element animates with CSS
+    // Pump starts at t=0.7s (bike about to reach center), peaks at t=1.0s, returns by t=1.4s
+    setTimeout(() => { wrapper.classList.add('pumping'); }, 700);
+    setTimeout(() => { wrapper.classList.remove('pumping'); }, 1400);
 
-    // Reset & play
+    // Play engine sound
     try {
       engineSound.currentTime = 0;
-      engineSound.volume = 0.7; // immediate audible volume; fade overlay starts at 0 then rises
+      engineSound.volume = 0.7;
       engineSound.muted = false;
     } catch (e) {}
-
     const playPromise = engineSound.play();
     if (playPromise !== undefined) {
-      playPromise.then(() => {
-        fadeVolume();
-      }).catch((err) => {
-        console.warn('Audio blocked — user must interact with page first.', err);
+      playPromise.then(() => fadeVolume()).catch(err => {
+        console.warn('Audio blocked — user must interact first.', err);
       });
     } else {
       fadeVolume();
     }
 
-    bike.addEventListener('animationend', () => {
-      bike.style.display = 'none';
+    wrapper.addEventListener('animationend', () => {
+      wrapper.style.display = 'none';
       setTimeout(() => {
         engineSound.pause();
         engineSound.currentTime = 0;
