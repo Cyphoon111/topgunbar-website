@@ -181,8 +181,9 @@ img { max-width: 100%; display: block; }
 /* ===== Motorcycle flyby animation ===== */
 .motorcycle-flyby {
   position: fixed;
-  bottom: 8%;
+  top: 50vh;
   left: 100%;
+  transform-origin: center;
   width: 420px;
   max-width: 50vw;
   height: auto;
@@ -211,7 +212,6 @@ img { max-width: 100%; display: block; }
 @media (max-width: 768px) {
   .motorcycle-flyby {
     width: 260px;
-    bottom: 12%;
   }
   @keyframes motorcycleFlyby {
     0% {
