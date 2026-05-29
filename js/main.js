@@ -106,3 +106,120 @@ window.addEventListener('load', () => {
     }, { once: true });
   }, 3000);
 });
+
+/* ---------------------------------------------------------------
+ * Collage full-screen lightbox
+ *
+ * Behavior:
+ *  - Click (or Enter/Space) on the collage  -> open full-screen overlay
+ *    with smooth fade + zoom-in transition.
+ *  - Click anywhere on the overlay (or the X button, or press Escape,
+ *    or use browser Back) -> close overlay and return to home page
+ *    in its previous scroll position.
+ *  - Uses history.pushState so the browser Back button is a natural way
+ *    to close the lightbox without breaking history (we pop our own
+ *    state, never the user's).
+ *  - Locks body scroll while open; restores scrollbar gutter so the
+ *    page doesn't jump.
+ *  - Fully keyboard accessible and respects prefers-reduced-motion.
+ * --------------------------------------------------------------- */
+(function initCollageLightbox() {
+  const trigger  = document.getElementById('collageShowcase');
+  const lightbox = document.getElementById('collageLightbox');
+  const closeBtn = document.getElementById('collageLightboxClose');
+  if (!trigger || !lightbox) return;
+
+  const HISTORY_FLAG = 'collage-lightbox';
+  let isOpen = false;
+  let lastFocus = null;
+
+  function lockBodyScroll() {
+    // Compensate for vertical scrollbar so layout doesn't jump on desktop
+    const sbw = window.innerWidth - document.documentElement.clientWidth;
+    document.documentElement.style.setProperty('--scrollbar-comp', sbw + 'px');
+    document.body.classList.add('collage-lightbox-open');
+  }
+  function unlockBodyScroll() {
+    document.body.classList.remove('collage-lightbox-open');
+    document.documentElement.style.removeProperty('--scrollbar-comp');
+  }
+
+  function openLightbox() {
+    if (isOpen) return;
+    isOpen = true;
+    lastFocus = document.activeElement;
+    lockBodyScroll();
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    // Focus the close button so Escape / Enter work and screen readers announce it
+    setTimeout(() => { try { closeBtn && closeBtn.focus({ preventScroll: true }); } catch (e) {} }, 50);
+    // Push a history entry so the user's Back button closes the lightbox
+    // (without leaving the page). We tag the state so popstate knows it's ours.
+    try {
+      history.pushState({ [HISTORY_FLAG]: true }, '', '#collage');
+    } catch (e) { /* ignore if history API unavailable */ }
+  }
+
+  function closeLightbox(opts) {
+    if (!isOpen) return;
+    isOpen = false;
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    unlockBodyScroll();
+    // Restore focus to the trigger for keyboard users
+    try { lastFocus && lastFocus.focus && lastFocus.focus({ preventScroll: true }); } catch (e) {}
+    // If we were closed by something OTHER than the browser Back button,
+    // pop our pushed history entry so we don't pollute history.
+    if (!opts || !opts.fromPopState) {
+      const st = history.state;
+      if (st && st[HISTORY_FLAG]) {
+        try { history.back(); } catch (e) {}
+      }
+    }
+  }
+
+  // --- Event wiring ---
+  trigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    openLightbox();
+  });
+  // Keyboard activation (Enter / Space) since the trigger is a role="button"
+  trigger.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      openLightbox();
+    }
+  });
+
+  // Click anywhere on the overlay closes it (image included — that's the spec)
+  lightbox.addEventListener('click', () => {
+    closeLightbox();
+  });
+  // The close button stops propagation isn't needed because the overlay also closes,
+  // but we still want explicit handling for screen readers / keyboard users:
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeLightbox();
+    });
+  }
+
+  // Escape key closes
+  document.addEventListener('keydown', (e) => {
+    if (isOpen && (e.key === 'Escape' || e.key === 'Esc')) {
+      e.preventDefault();
+      closeLightbox();
+    }
+  });
+
+  // Browser Back button: if we pushed our state, close without re-popping
+  window.addEventListener('popstate', () => {
+    if (isOpen) closeLightbox({ fromPopState: true });
+  });
+
+  // If the page loads with #collage in the URL (e.g. shared link), open it
+  if (window.location.hash === '#collage') {
+    // Defer so layout/styles are ready
+    requestAnimationFrame(() => openLightbox());
+  }
+})();

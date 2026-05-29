@@ -696,3 +696,182 @@ img { max-width: 100%; display: block; }
   .maverick-body { font-size: 1rem; }
   .maverick-image { max-width: 280px; }
 }
+
+/* ---------- Collage interactive expand-to-fullscreen ---------- */
+.collage-showcase {
+  cursor: zoom-in;
+  position: relative;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.collage-showcase:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(255, 191, 0, 0.85),
+    0 0 40px rgba(255, 191, 0, 0.45),
+    0 0 90px rgba(0, 229, 255, 0.3);
+}
+.collage-expand-hint {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.65);
+  color: var(--neon-cyan, #00e5ff);
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border: 1px solid rgba(0, 229, 255, 0.45);
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 220ms ease, transform 220ms ease;
+  text-shadow: 0 0 4px rgba(0, 229, 255, 0.6);
+  white-space: nowrap;
+}
+.collage-showcase:hover .collage-expand-hint,
+.collage-showcase:focus-visible .collage-expand-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Always show the hint subtly on touch devices (no hover) */
+@media (hover: none) {
+  .collage-expand-hint {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+}
+
+/* Full-screen lightbox overlay */
+.collage-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 4vw;
+  cursor: zoom-out;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 320ms ease,
+    visibility 0s linear 320ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.collage-lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 320ms ease,
+    visibility 0s linear 0s;
+}
+.collage-lightbox-image {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow:
+    0 0 35px rgba(255, 191, 0, 0.35),
+    0 0 90px rgba(0, 229, 255, 0.25);
+  transform: scale(0.9);
+  opacity: 0;
+  transition:
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 320ms ease;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.collage-lightbox.is-open .collage-lightbox-image {
+  transform: scale(1);
+  opacity: 1;
+}
+.collage-lightbox-close {
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 28px;
+  line-height: 1;
+  font-family: 'Black Ops One', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 4px;
+  transition:
+    background 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
+  z-index: 1;
+}
+.collage-lightbox-close:hover,
+.collage-lightbox-close:focus-visible {
+  background: rgba(255, 42, 60, 0.85);
+  border-color: #fff;
+  transform: scale(1.08);
+  outline: none;
+}
+.collage-lightbox-hint {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Black Ops One', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Lock body scroll while lightbox is open (toggled via JS class on <body>) */
+body.collage-lightbox-open {
+  overflow: hidden;
+  /* prevent layout shift from scrollbar disappearing on desktop */
+  padding-right: var(--scrollbar-comp, 0px);
+}
+
+@media (max-width: 768px) {
+  .collage-lightbox { padding: 2vh 2vw; }
+  .collage-lightbox-close {
+    width: 42px; height: 42px;
+    font-size: 24px;
+    top: 12px; right: 12px;
+  }
+  .collage-lightbox-hint {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    bottom: 14px;
+  }
+  .collage-expand-hint {
+    font-size: 0.7rem;
+    letter-spacing: 1.5px;
+    padding: 5px 8px;
+    bottom: 10px; right: 10px;
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .collage-lightbox,
+  .collage-lightbox-image,
+  .collage-expand-hint,
+  .collage-lightbox-close {
+    transition: opacity 120ms linear, visibility 0s linear !important;
+    transform: none !important;
+  }
+}
